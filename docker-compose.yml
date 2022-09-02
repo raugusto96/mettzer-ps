@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+  front:
+    container_name: mettzer_front
+    build: ./front-mettzer
+    tty: true
+    working_dir: /app
+    stdin_open: true
+    restart: always
+    command: npm start
+    volumes:
+      - ./front-mettzer:/app
+    depends_on:
+      - back
+    ports:
+      - 3000:3000
+    environment:
+      - CORE_API_TOKEN=RTvapNJeChx4DfHzKj8OiA96kMPgSVQ5
+  back:
+    image: node:16.14
+    container_name: mettzer_back
+    build: ./back-mettzer
+    tty: true
+    stdin_open: true
+    command: npm run dev
+    restart: always
+    working_dir: /app
+    volumes:
+      - ./back-mettzer:/app
+    depends_on:
+      - mongodb
+    ports:
+      - 3001:3001
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/mettzer
+      - JWT_SECRET=HY6X0mpRC60rJAdgFxeqJYYs
+  mongodb:
+    image: mongo:5.0.7
+    container_name: mettzer_db
+    restart: always
+    ports:
+      - 27017:27017
+
+networks:
+  default:
+    name: mettzer
